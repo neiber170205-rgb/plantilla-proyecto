@@ -4,7 +4,7 @@
 
 | Pieza | Tecnologia | Responsable |
 |---|---|---|
-| Frontend | React | |
+| Frontend | React + Vite (Tailwind y shadcn/ui, ver [ADR 0002](adr/0002-tailwind-shadcn.md)) | |
 | Backend | Python (FastAPI) | |
 | Base de datos | PostgreSQL | |
 | Automatizaciones | n8n | |

@@ -19,25 +19,32 @@ Ultima demo: —
 
 ## Como correrlo
 
-Backend:
+La primera vez, un comando por cada lado. Cada uno instala TODO lo que necesita
+y te deja el `.env` creado:
 
 ```bash
-cd backend
-python -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload
+cd backend  && bash setup.sh
+cd frontend && bash setup.sh
 ```
 
-Frontend:
+Despues, cada vez que vayas a trabajar, en dos terminales:
 
 ```bash
-cd frontend
-npm install
-npm run dev
+cd backend  && source .venv/bin/activate && uvicorn app.main:app --reload   # API en :8000
+cd frontend && npm run dev                                                  # UI en :5173
 ```
 
-Copia `.env.example` a `.env` y llena los valores. El `.env` real NUNCA se sube.
+Y abre http://localhost:5173
+
+El `.env` es UNO SOLO para todo el proyecto y vive en la raiz. Lo crean los
+`setup.sh` a partir de `.env.example`; revisa que los valores sean los tuyos.
+El `.env` real NUNCA se sube.
+
+Lo que NO esta en el repo y por eso hay que instalarlo: `frontend/node_modules/`
+y `backend/.venv/`. Se regeneran solos con los `setup.sh`, no los subas.
+
+La UI arranca con datos falsos, asi que se ve aunque el backend no este listo.
+Como conectarla de verdad esta en [frontend/README.md](frontend/README.md).
 
 ## Documentacion
 
