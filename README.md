@@ -19,13 +19,15 @@ Ultima demo: —
 
 ## Como correrlo
 
-La primera vez, un comando por cada lado. Cada uno instala TODO lo que necesita
-y te deja el `.env` creado:
+La primera vez, **un solo comando** desde la raiz. Instala todo: levanta la base
+de datos, arma el backend, instala el frontend y comprueba que se hablan entre si.
 
 ```bash
-cd backend  && bash setup.sh
-cd frontend && bash setup.sh
+bash setup.sh
 ```
+
+Necesitas tener instalados **Docker**, **Python 3.10+** y **Node 20+**.
+Si te falta alguno, el script te dice cual y donde bajarlo.
 
 Despues, cada vez que vayas a trabajar, en dos terminales:
 
@@ -36,15 +38,23 @@ cd frontend && npm run dev                                                  # UI
 
 Y abre http://localhost:5173
 
-El `.env` es UNO SOLO para todo el proyecto y vive en la raiz. Lo crean los
-`setup.sh` a partir de `.env.example`; revisa que los valores sean los tuyos.
-El `.env` real NUNCA se sube.
+La base queda corriendo sola en Docker. Para apagarla: `docker compose stop`.
+
+El `.env` es UNO SOLO para todo el proyecto y vive en la raiz. Lo crea `setup.sh`
+a partir de `.env.example`. El `.env` real NUNCA se sube.
 
 Lo que NO esta en el repo y por eso hay que instalarlo: `frontend/node_modules/`
-y `backend/.venv/`. Se regeneran solos con los `setup.sh`, no los subas.
+y `backend/.venv/`. Se regeneran con `setup.sh`, no los subas.
 
-La UI arranca con datos falsos, asi que se ve aunque el backend no este listo.
-Como conectarla de verdad esta en [frontend/README.md](frontend/README.md).
+## Comprobar que todo esta bien
+
+```bash
+curl http://localhost:8000/api/salud
+```
+
+Si responde `{"estado":"ok","bd":"ok","version":"1.0.0"}`, la tuberia completa
+funciona: backend arriba y base conectada. Si responde 503, la base esta caida:
+`docker compose ps` para ver como esta.
 
 ## Documentacion
 
@@ -55,6 +65,7 @@ Como conectarla de verdad esta en [frontend/README.md](frontend/README.md).
 | [02-arquitectura](docs/02-arquitectura.md) | Como estan armadas las piezas |
 | [03-api](docs/03-api.md) | El contrato entre frontend y backend |
 | [04-datos](docs/04-datos.md) | Modelo de base de datos |
+| [adr/](docs/adr/) | Decisiones tecnicas y por que se tomaron |
 | [manual-usuario](docs/manual-usuario.md) | Como se usa, con capturas |
 | [bitacora](docs/bitacora/) | Acta de cada miercoles |
 

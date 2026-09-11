@@ -12,6 +12,10 @@
 # ---------------------------------------------------------------
 set -euo pipefail
 
+# Correr siempre parado en la carpeta del script, sin importar desde donde
+# lo hayan invocado. El setup.sh de la raiz lo llama como 'bash backend/setup.sh'.
+cd "$(dirname "$0")"
+
 echo ""
 echo "=== Backend del semillero SINDES ==="
 echo ""
