@@ -1,0 +1,52 @@
+# Solo la base de datos va en Docker.
+# El backend y el frontend corren nativos, que es como se trabaja todos los dias.
+#
+#   docker compose up -d      la prende
+#   docker compose ps         ver si esta sana
+#   docker compose stop       la apaga sin borrar nada
+#   docker compose down       la apaga y borra el contenedor (los datos NO)
+#
+# Los datos viven en un volumen con nombre, asi que sobreviven a 'down'.
+# Para borrarlos de verdad y empezar de cero: docker compose down -v
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+
+    # Todo sale del .env de la raiz. Los valores despues de ':-' son los que se
+    # usan si la variable no esta puesta, para que esto arranque recien clonado.
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-sindes}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-sindes}
+      POSTGRES_DB: ${POSTGRES_DB:-sindes}
+
+    # "127.0.0.1:" al principio es a proposito: la base queda visible solo desde
+    # esta maquina y no desde la red del salon.
+    # Si ya tienes otro Postgres ocupando el 5432, cambia POSTGRES_PORT en el .env.
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      # El SQL que este en db/init/ se aplica SOLO la primera vez, cuando el
+      # volumen se crea vacio. Si cambias esos archivos despues, no pasa nada
+      # hasta que hagas 'docker compose down -v'.
+      - ./db/init:/docker-entrypoint-initdb.d
+
+    # Sin esto, 'docker compose up -d' devuelve el control apenas arranca el
+    # contenedor, pero Postgres todavia no acepta conexiones. El setup.sh
+    # espera a que esto diga "healthy" antes de seguir.
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-sindes} -d ${POSTGRES_DB:-sindes}",
+        ]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+      start_period: 5s
+
+volumes:
+  postgres-data:
