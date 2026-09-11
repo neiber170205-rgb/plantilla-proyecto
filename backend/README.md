@@ -20,6 +20,7 @@ Documentacion interactiva: http://localhost:8000/docs
 |---|---|---|
 | `app/main.py` | arranca la app, CORS, `/api/salud` | Si, para montar tus routers |
 | `app/db.py` | **lo unico que sabe conectarse a la base** | No |
+| `app/ejemplo/` | el ejemplo borrable | Se copia, no se edita |
 
 ## /api/salud
 
@@ -58,6 +59,15 @@ FastAPI responde **422** por su cuenta cuando el cuerpo de una peticion no cuadr
 pero nuestros contratos solo declaran 400/404/500 y el frontend tiene esa tabla
 copiada. `main.py` traduce el 422 a **400**. Si agregas endpoints, esa traduccion
 ya aplica a todos: no la quites.
+
+## El ejemplo
+
+`app/ejemplo/router.py` implementa `docs/ejemplo-contrato.md` y es el molde:
+una tabla, dos endpoints, SQL a mano. Copialo a tu propia carpeta y borra el
+ejemplo (el comando esta en el README de la raiz).
+
+El backend sigue arrancando despues de borrarlo: el `import` del ejemplo en
+`main.py` esta dentro de un `try`, a proposito.
 
 ## El contrato
 

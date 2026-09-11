@@ -40,3 +40,9 @@ nada; con datos que te importen, no lo corras.
 Una por cambio: `001-agrega-columna-color.sql`, `002-...`.
 
 Nunca se edita una migracion ya aplicada. Se crea una nueva.
+
+## El ejemplo
+
+`init/01-ejemplo.sql` es del ejemplo borrable que trae la plantilla
+(ver `docs/ejemplo-contrato.md`). Cuando el equipo defina su dominio, se borra
+ese archivo y se pone el esquema real en `init/`.
