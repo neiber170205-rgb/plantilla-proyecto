@@ -2,13 +2,19 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Response
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+
+from app.db import check_database
 
 # El .env es uno solo para todo el proyecto y vive en la raiz del repo.
 load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
-app = FastAPI(title="Semillero SINDES")
+VERSION = "1.0.0"
+
+app = FastAPI(title="Semillero SINDES", version=VERSION)
 
 # Sin esto el navegador bloquea TODAS las peticiones del frontend, porque corre
 # en otro puerto (5173) que el backend (8000). El error que sale en consola es
@@ -24,6 +30,49 @@ app.add_middleware(
 )
 
 
+@app.exception_handler(RequestValidationError)
+def datos_invalidos(request: Request, exc: RequestValidationError):
+    """Convierte el 422 de FastAPI en el 400 que dice el contrato.
+
+    Cuando el cuerpo de una peticion no cuadra, FastAPI responde 422 por su
+    cuenta. Nuestros contratos solo declaran 400/404/500, y el frontend tiene
+    esa tabla copiada: sin esta traduccion, un dato invalido le mostraria al
+    usuario un mensaje vacio.
+    """
+    return JSONResponse(status_code=400, content={"detail": "Datos invalidos"})
+
+
 @app.get("/api/salud")
-def salud():
-    return {"estado": "ok"}
+def salud(response: Response):
+    """El "hola mundo" de la plantilla: si esto responde bien, la tuberia sirve.
+
+    No tiene nada del dominio de ningun proyecto, asi que se queda para siempre.
+    """
+    try:
+        check_database()
+    except Exception:
+        # A proposito no se devuelve el error de Python: al estudiante no le
+        # sirve una traza, le sirve saber que hacer.
+        response.status_code = 503
+        return {
+            "estado": "degradado",
+            "bd": "sin conexion",
+            "version": VERSION,
+            "mensaje": (
+                "No se pudo conectar a la base de datos. "
+                "Revisa que este arriba con: docker compose ps"
+            ),
+        }
+
+    return {"estado": "ok", "bd": "ok", "version": VERSION}
+
+
+# El ejemplo es borrable. Cuando el equipo defina su dominio real, borra la
+# carpeta app/ejemplo/ completa y el backend sigue arrancando igual, sin tener
+# que tocar este archivo: por eso el import esta dentro de un try.
+try:
+    from app.ejemplo.router import router as router_ejemplo
+except ModuleNotFoundError:
+    pass
+else:
+    app.include_router(router_ejemplo)
