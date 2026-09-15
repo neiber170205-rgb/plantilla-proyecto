@@ -14,6 +14,6 @@ Asistentes:
 ## Decisiones
 - Decision y por que.
 
-## Compromisos para el proximo miercoles
+## Compromisos para la proxima reunion
 | Quien | Issue | Que entrega |
 |---|---|---|
