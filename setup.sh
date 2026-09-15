@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # ---------------------------------------------------------------
-# Semillero SINDES - FESC
 # Deja el proyecto entero listo para trabajar, con un solo comando.
 #
 #   bash setup.sh
@@ -21,7 +20,7 @@ cd "$(dirname "$0")"
 
 echo ""
 echo "==================================================="
-echo "  Semillero SINDES - instalacion completa"
+echo "  Instalacion completa del proyecto"
 echo "==================================================="
 
 # --- 1. Docker --------------------------------------------------
@@ -141,7 +140,7 @@ fi
 # backend que ya tengas abierto en otra terminal.
 PUERTO_PRUEBA=8123
 "$VENV_PY" -m uvicorn app.main:app --port "$PUERTO_PRUEBA" --app-dir backend \
-  > /tmp/sindes-salud.log 2>&1 &
+  > /tmp/salud-backend.log 2>&1 &
 PID_PRUEBA=$!
 
 # Pase lo que pase de aqui en adelante, ese proceso se apaga.
@@ -176,7 +175,7 @@ case "$RESPUESTA" in
     echo "Respuesta recibida: ${RESPUESTA:-(ninguna)}"
     echo ""
     echo "Lo mas probable: DATABASE_URL en el .env no coincide con POSTGRES_PORT."
-    echo "Detalle tecnico en /tmp/sindes-salud.log"
+    echo "Detalle tecnico en /tmp/salud-backend.log"
     exit 1
     ;;
 esac

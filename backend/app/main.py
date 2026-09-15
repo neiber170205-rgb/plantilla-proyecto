@@ -14,7 +14,7 @@ load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
 VERSION = "1.0.0"
 
-app = FastAPI(title="Semillero SINDES", version=VERSION)
+app = FastAPI(title="API", version=VERSION)
 
 # Sin esto el navegador bloquea TODAS las peticiones del frontend, porque corre
 # en otro puerto (5173) que el backend (8000). El error que sale en consola es
@@ -32,27 +32,23 @@ app.add_middleware(
 
 @app.exception_handler(RequestValidationError)
 def datos_invalidos(request: Request, exc: RequestValidationError):
-    """Convierte el 422 de FastAPI en el 400 que dice el contrato.
+    """Convierte el 422 de FastAPI en el 400 que declara docs/03-api.md.
 
     Cuando el cuerpo de una peticion no cuadra, FastAPI responde 422 por su
-    cuenta. Nuestros contratos solo declaran 400/404/500, y el frontend tiene
-    esa tabla copiada: sin esta traduccion, un dato invalido le mostraria al
-    usuario un mensaje vacio.
+    cuenta. El contrato de la API solo declara 400/404/500, asi que el
+    frontend nunca tiene que saber que existe el 422.
     """
     return JSONResponse(status_code=400, content={"detail": "Datos invalidos"})
 
 
 @app.get("/api/salud")
 def salud(response: Response):
-    """El "hola mundo" de la plantilla: si esto responde bien, la tuberia sirve.
-
-    No tiene nada del dominio de ningun proyecto, asi que se queda para siempre.
-    """
+    """Si esto responde bien, el backend esta arriba y conectado a la base."""
     try:
         check_database()
     except Exception:
-        # A proposito no se devuelve el error de Python: al estudiante no le
-        # sirve una traza, le sirve saber que hacer.
+        # A proposito no se devuelve el error de Python: una traza no le dice a
+        # nadie que hacer, este mensaje si.
         response.status_code = 503
         return {
             "estado": "degradado",
@@ -67,12 +63,7 @@ def salud(response: Response):
     return {"estado": "ok", "bd": "ok", "version": VERSION}
 
 
-# El ejemplo es borrable. Cuando el equipo defina su dominio real, borra la
-# carpeta app/ejemplo/ completa y el backend sigue arrancando igual, sin tener
-# que tocar este archivo: por eso el import esta dentro de un try.
-try:
-    from app.ejemplo.router import router as router_ejemplo
-except ModuleNotFoundError:
-    pass
-else:
-    app.include_router(router_ejemplo)
+# Aqui se montan los routers de app/routers/. Por cada archivo nuevo:
+#
+#   from app.routers.nombre import router as router_nombre
+#   app.include_router(router_nombre)

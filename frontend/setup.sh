@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # ---------------------------------------------------------------
-# Semillero SINDES - FESC
 # Instala todo lo que el frontend necesita para correr.
 #
 # Se corre asi, una vez por maquina, despues de clonar el repo:
@@ -17,7 +16,7 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 echo ""
-echo "=== Frontend del semillero SINDES ==="
+echo "=== Instalacion del frontend ==="
 echo ""
 
 # --- 1. Revisar Node -------------------------------------------

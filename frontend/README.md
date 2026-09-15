@@ -1,123 +1,119 @@
 # Frontend
 
-React + Vite + TypeScript. Tailwind v4 y shadcn/ui para los estilos.
+React + Vite + TypeScript, con Tailwind CSS v4, shadcn/ui y lucide-react.
+
+## Instalacion
+
+Lo normal es instalar el proyecto entero desde la raiz, con un solo comando:
 
 ```bash
-npm run dev      # http://localhost:5173
-npm run lint     # oxlint
-npm run build    # revisa tipos y compila
+bash setup.sh
 ```
 
-La instalacion la hace `bash ../setup.sh` desde la raiz, que instala todo el
-proyecto. Si solo quieres el frontend: `bash setup.sh`.
+Si solo necesitas el frontend, desde esta carpeta:
 
-## Que se toca y que no
+```bash
+bash setup.sh
+```
 
-| Carpeta o archivo | Que hay | Se toca |
+Ese script revisa que tengas **Node 20 o mas nuevo**, instala las dependencias
+exactas de `package-lock.json`, crea el `.env` de la raiz si no existe y compila
+una vez para comprobar que todo quedo bien.
+
+`node_modules/` no se sube al repo: se regenera con el script.
+
+## Comandos
+
+| Comando | Que hace |
+|---|---|
+| `npm run dev` | levanta la interfaz en http://localhost:5173 |
+| `npm run build` | revisa los tipos y compila para produccion |
+| `npm run lint` | revisa el codigo con oxlint |
+| `npm run preview` | sirve la version compilada |
+
+## Estructura
+
+```
+frontend/
+├── index.html           punto de entrada de la pagina
+├── setup.sh             instala todo lo necesario
+├── package.json         dependencias y comandos
+├── vite.config.ts       configuracion de Vite (alias @, .env de la raiz)
+├── components.json      configuracion de shadcn/ui
+├── public/              archivos estaticos (favicon, imagenes)
+└── src/
+    ├── main.tsx         arranca React
+    ├── App.tsx          componente raiz
+    ├── index.css        Tailwind y el tema de shadcn
+    ├── components/      componentes propios, reutilizables
+    │   └── ui/          componentes de shadcn (se agregan con el CLI)
+    ├── pages/           una pantalla por archivo
+    ├── services/        lo unico que habla con el backend
+    ├── hooks/           hooks propios de React
+    └── lib/             utilidades (utils.ts viene de shadcn)
+```
+
+| Carpeta | Que va | Se edita a mano |
 |---|---|---|
-| `src/components/ui/` | componentes de shadcn | No. Se agregan con `npx shadcn@latest add` |
-| `src/lib/utils.ts`, `src/index.css` | lo que genero shadcn | No |
-| `src/ejemplo/` | el ejemplo borrable | **Se copia, no se edita** (ver abajo) |
-| `src/App.tsx` | el encabezado y que pantalla se muestra | Si |
-| `index.html` | el titulo de la pestaña | Si |
+| `src/components/ui/` | componentes de shadcn | No. Se agregan con el CLI |
+| `src/components/` | componentes propios | Si |
+| `src/pages/` | pantallas completas | Si |
+| `src/services/` | llamadas al backend, una funcion por endpoint | Si |
+| `src/hooks/` | hooks propios | Si |
+| `src/lib/utils.ts`, `src/index.css` | lo que genero shadcn | Solo si sabes lo que haces |
 
-## El ejemplo es de donde se copia el patron, no donde se construye encima
-
-`src/ejemplo/` trae un caso completo y funcionando —inventario de calzado— para
-que veas el patron entero: el archivo que habla con la api, el formulario y la
-pantalla con sus tres estados.
-
-**No escribas tu dominio ahi dentro.** Copia la carpeta con el nombre de tu
-dominio, adaptala, y borra `src/ejemplo/`:
+## Agregar componentes de shadcn
 
 ```bash
-cp -r src/ejemplo src/pedidos     # y adentro: renombra tipos y funciones
+npx shadcn@latest add button card input
 ```
 
-Cuando ya no lo necesites, el comando de borrado esta en el README de la raiz.
-Despues de borrarlo `npm run build` sigue pasando y no hay que tocar `App.tsx`:
-usa `import.meta.glob`, que se resuelve al compilar y queda vacio si la carpeta
-no esta. En su lugar aparece un recuadro que dice donde va tu primera pantalla.
+Quedan en `src/components/ui/`. Catalogo: https://ui.shadcn.com/docs/components
 
-## Los tres archivos del ejemplo
+Iconos: https://lucide.dev/icons
 
-| Archivo | Que hace |
-|---|---|
-| `src/ejemplo/api.ts` | lo unico que habla con el backend |
-| `src/ejemplo/index.tsx` | la pantalla: estado, carga, error, tabla |
-| `src/ejemplo/VarianteForm.tsx` | el formulario |
+## Imports con @
 
-## La regla del contrato
-
-`api.ts` tiene **una funcion exportada por endpoint** del contrato:
-
-| Endpoint | Funcion |
-|---|---|
-| `GET /ejemplo/variantes` | `getVariantes()` |
-| `POST /ejemplo/variantes` | `postVariante(nueva)` |
-
-El verbo va en ingles y el dominio en español, como dice `../AGENTS.md`.
-
-Si necesitas un endpoint que no esta en el contrato, **no lo agregues aqui**.
-
-### Cuando cambia el contrato
-
-En este orden, nunca al reves:
-
-1. Se propone en el canal y se aprueba en la reunion del miercoles.
-2. Se actualiza `../docs/03-api.md`.
-3. Se cambia el backend.
-4. Se cambian los tipos y las funciones del archivo de api.
-5. Se actualizan los datos falsos de ese mismo archivo.
-6. Se cambia la pantalla.
-
-## Datos falsos
-
-Arriba de `src/ejemplo/api.ts` hay una linea:
+`@/` apunta a `src/`, asi no hay que contar `../../`:
 
 ```ts
-export const USAR_DATOS_FALSOS = true
+import { Button } from "@/components/ui/button"
 ```
 
-En `true` la pantalla funciona sin backend, y arriba sale un aviso para que nadie
-crea que ya esta conectado. Cuando el backend responda, se pone en `false`.
+## Variables de entorno
 
-Se cambia a mano y a proposito: asi queda visible en el pull request y todo el
-equipo sabe contra que esta corriendo la demo.
+El frontend lee el `.env` de la **raiz del repo**, no uno propio. Hay uno solo
+para todo el proyecto.
 
-## La URL del backend
-
-Sale de `VITE_API_URL`, que vive en el `.env` de la raiz del repo (mira
-`../.env.example`). Es UN SOLO `.env` para backend y frontend, y por eso
-`vite.config.ts` lleva un `envDir` que apunta a la carpeta de arriba.
-Si la variable no existe, se usa `http://localhost:8000/api`.
-
-Vite solo le entrega al navegador las variables que empiezan por `VITE_`, y todo
-lo que lleve ese prefijo queda visible para cualquiera que abra la pagina: ahi
-nunca van claves ni contraseñas. El `.env` real NUNCA se sube.
-
-## Errores
-
-`api.ts` traduce a español lo que puede fallar:
-
-| Que paso | Que ve el usuario |
+| Variable | Para que |
 |---|---|
-| 400 / 404 / 500 | los mensajes de la tabla "Errores" del contrato |
-| la peticion no llego (backend apagado, sin red, CORS) | `No se pudo conectar con <URL>. Revisa que el backend este corriendo.` |
+| `VITE_API_URL` | direccion base del backend, ej: `http://localhost:8000/api` |
 
-La pantalla solo los muestra, con un boton **Reintentar** al lado.
+Se usa asi:
 
-## Validaciones
+```ts
+const API_URL = import.meta.env.VITE_API_URL
+```
 
-El formulario solo tiene `required` y `type="number"`. Eso es validacion de
-formulario: lo minimo para que `Number()` no llegue como `NaN` al JSON.
+Vite solo expone al navegador las variables que empiezan por `VITE_`, y todo lo
+que lleve ese prefijo lo puede ver cualquiera que abra la pagina: **ahi nunca van
+claves ni contraseñas**.
 
-**Reglas de negocio no hay ninguna**, porque todavia no estan escritas. Se
-escriben primero en `../docs/01-requisitos.md` (RN-01, RN-02...) y despues se
-programan. Si crees que falta una, se pregunta en el canal; no se inventa aqui.
+## Llamar al backend
+
+Todo lo que hable con el backend va en `src/services/`, con **una funcion
+exportada por cada endpoint** de `docs/03-api.md`. Asi el archivo se puede leer
+al lado del contrato para comprobar que no se invento nada.
+
+Dos cosas de `fetch` que conviene saber:
+
+- Solo lanza error cuando la peticion **no llego** (backend apagado, sin red,
+  CORS). Con un 400, 404 o 500 no lanza nada: hay que revisar `response.ok`.
+- Los codigos de error que devuelve el backend son los de la tabla "Errores"
+  de `docs/03-api.md`.
 
 ## Un detalle que confunde
 
-En desarrollo vas a ver DOS peticiones en la pestaña Network. Es `<StrictMode>`
-de `src/main.tsx`, que monta todo dos veces a proposito para destapar errores.
-En produccion pasa una sola vez.
+En desarrollo cada peticion se ve **dos veces** en la pestaña Network. Es
+`<StrictMode>` de `src/main.tsx`, que monta todo dos veces a proposito para
+destapar errores. En produccion pasa una sola vez.

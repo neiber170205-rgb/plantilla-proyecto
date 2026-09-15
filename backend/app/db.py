@@ -16,7 +16,7 @@ load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 # El valor por defecto es el mismo que levanta docker-compose.yml, para que esto
 # funcione recien clonado aunque nadie haya tocado el .env todavia.
 DATABASE_URL = os.getenv(
-    "DATABASE_URL", "postgresql://sindes:sindes@localhost:5432/sindes"
+    "DATABASE_URL", "postgresql://app:app@localhost:5432/app"
 )
 
 

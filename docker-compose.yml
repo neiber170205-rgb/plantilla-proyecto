@@ -17,12 +17,12 @@ services:
     # Todo sale del .env de la raiz. Los valores despues de ':-' son los que se
     # usan si la variable no esta puesta, para que esto arranque recien clonado.
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-sindes}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-sindes}
-      POSTGRES_DB: ${POSTGRES_DB:-sindes}
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-app}
+      POSTGRES_DB: ${POSTGRES_DB:-app}
 
     # "127.0.0.1:" al principio es a proposito: la base queda visible solo desde
-    # esta maquina y no desde la red del salon.
+    # esta maquina y no desde la red local.
     # Si ya tienes otro Postgres ocupando el 5432, cambia POSTGRES_PORT en el .env.
     ports:
       - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
@@ -41,7 +41,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "pg_isready -U ${POSTGRES_USER:-sindes} -d ${POSTGRES_DB:-sindes}",
+          "pg_isready -U ${POSTGRES_USER:-app} -d ${POSTGRES_DB:-app}",
         ]
       interval: 3s
       timeout: 5s

@@ -4,7 +4,7 @@ Formato: como <rol>, quiero <accion>, para <beneficio>.
 
 | ID | Historia | Prioridad | Estado |
 |---|---|---|---|
-| HU-01 | Como bodeguero, quiero registrar la entrada de material, para saber el stock real | Alta | Pendiente |
+| HU-01 | Como <rol>, quiero <accion>, para <beneficio> | | |
 | HU-02 | | | |
 
 Prioridad: Alta / Media / Baja.

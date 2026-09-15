@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # ---------------------------------------------------------------
-# Semillero SINDES - FESC
 # Instala el backend: entorno virtual + FastAPI + dependencias
 #
 # Se corre desde la carpeta backend/:
@@ -17,7 +16,7 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 echo ""
-echo "=== Backend del semillero SINDES ==="
+echo "=== Instalacion del backend ==="
 echo ""
 
 # --- 1. Encontrar Python ---------------------------------------
